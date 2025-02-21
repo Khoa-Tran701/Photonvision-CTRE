@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -84,6 +86,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    SignalLogger.setPath("/media/sda1/");
+    SignalLogger.start();
+
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -91,7 +96,9 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {}
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+    SignalLogger.stop();
+  }
 
   @Override
   public void simulationPeriodic() {}

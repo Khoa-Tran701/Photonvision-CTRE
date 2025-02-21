@@ -13,6 +13,8 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import com.fasterxml.jackson.core.StreamReadCapability;
+
 // import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -92,12 +94,13 @@ public class PoseEstimateFeed extends SubsystemBase {
     SmartDashboard.putData("GameField", m_field2d);
   }
 
-  public Optional<EstimatedRobotPose> UpdateVisionPose() {
+  public  Optional<EstimatedRobotPose> UpdateVisionPose() {
     m_limeLightPoseEstimator.setRobotToCameraTransform(m_robotToLimelightTransform3d);
     m_fishEyePoseEstimator.setRobotToCameraTransform(m_robotToFishEyeTransform3d);
 
-    Optional<EstimatedRobotPose> pose = null;
-    try{
+    Optional<EstimatedRobotPose> pose =  Optional.empty();
+    boolean check = false;
+
     var limeLight = m_limeLight.getLatestResult();
     var fisheye = m_fishEye.getLatestResult();
     final Optional<EstimatedRobotPose> optionalEstimatedPoseLime = m_limeLightPoseEstimator.update(limeLight);
@@ -115,11 +118,6 @@ public class PoseEstimateFeed extends SubsystemBase {
       pose = optionalEstimatedPoseFish;//.get().estimatedPose.toPose2d();
     }
     return pose;
-
-  } catch(NullPointerException exception){
-    //Pose2d();
-    return pose;
-  } 
   }
 
   public double getDistance() {
@@ -155,7 +153,10 @@ public class PoseEstimateFeed extends SubsystemBase {
   }
 
   public void updateCTREpose(){
-    m_swerveDrivetrain.addVisionMeasurement(UpdateVisionPose().get().estimatedPose.toPose2d(), UpdateVisionPose().get().timestampSeconds, visionMeasurementStdDevs); 
+
+    Optional<EstimatedRobotPose> estimatePose = UpdateVisionPose();
+    if(estimatePose.isPresent() && estimatePose != null){
+    m_swerveDrivetrain.addVisionMeasurement(estimatePose.get().estimatedPose.toPose2d(),estimatePose.get().timestampSeconds, visionMeasurementStdDevs); }
   }
 
   @Override
@@ -167,7 +168,10 @@ public class PoseEstimateFeed extends SubsystemBase {
     SmartDashboard.putNumber("Rotation", m_swerveDrivetrain.getPose().getRotation().getDegrees());
 
     if (limeLight.hasTargets() || fishEye.hasTargets()) {
+      // SmartDashboard.putBoolean("EstimateReady", UpdateVisionPose());
+      SmartDashboard.putNumber("apriltagcheck", m_aprilTagFieldLayout.getTagPose(19).get().getX());
       updateCTREpose();
+      // SmartDashboard.putNumber("GetTagID", limeLight.getBestTarget().fiducialId);
       // m_field2d.setRobotPose(UpdateVisionPose().get().estimatedPose.toPose2d());
       // UpdateVisionPose(); // remove when using global
       // m_field2d.setRobotPose(UpdateGlobalPose());
