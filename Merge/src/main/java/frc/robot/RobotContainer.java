@@ -90,6 +90,9 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        // joystick.x().onTrue(new VisionLineUp());
+
     }
 
     public Command getAutonomousCommand() {

@@ -16,10 +16,15 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -55,6 +60,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    private final PoseEstimateFeed vision = new PoseEstimateFeed();
+
 
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
@@ -115,6 +122,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             this
         )
     );
+    
+    //  public boolean autoAlign(){
+    //     HolonomicDriveController hDriver = new HolonomicDriveController(
+    //         new PIDController(13.734, 0, 0.22443),
+    //         new PIDController(13.734, 0, 0.22443), 
+    //         new ProfiledPIDController(0.58204, 0, 0.0056021, new TrapezoidProfile.Constraints(4.73, 9.6)));
+
+    //         SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric();
+
+    //        ChassisSpeeds hdOutput = hDriver.calculate(new Pose2d(-vision.getXoffset(), -vision.getYoffset(), new Rotation2d(vision.getRoffset())),
+    //         new Pose2d(0,-0.5, new Rotation2d(0)), 4.73, new Rotation2d(0));
+
+    //         this.applyRequest(() ->
+    //         drive.withVelocityX(hdOutput.vyMetersPerSecond) // Drive forward with negative Y (forward)
+    //         .withVelocityY(hdOutput.vxMetersPerSecond) // Drive left with negative X (left)
+    //         .withRotationalRate(hdOutput.omegaRadiansPerSecond) // Drive counterclockwise with negative X (left)
+    //     );    
+    //     return hDriver.atReference();
+    // }
+
 
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineRotation;

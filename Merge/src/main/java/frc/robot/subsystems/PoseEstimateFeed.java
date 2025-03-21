@@ -159,19 +159,48 @@ public class PoseEstimateFeed extends SubsystemBase {
     m_swerveDrivetrain.addVisionMeasurement(estimatePose.get().estimatedPose.toPose2d(),estimatePose.get().timestampSeconds, visionMeasurementStdDevs); }
   }
 
+
+  public double getXoffset(){
+    var limeLight = m_limeLight.getLatestResult();
+
+    return limeLight.getBestTarget().getBestCameraToTarget().getTranslation().getX();
+  }
+  
+  public double getYoffset(){
+    var limeLight = m_limeLight.getLatestResult();
+
+    return limeLight.getBestTarget().getBestCameraToTarget().getTranslation().getY();
+  }
+  
+  public double getRoffset(){
+    var limeLight = m_limeLight.getLatestResult();
+
+    return limeLight.getBestTarget().getBestCameraToTarget().getRotation().getZ();
+  }
+
   @Override
   public void periodic() {
-    m_field2d.setRobotPose(m_swerveDrivetrain.getPose());
+    // m_field2d.setRobotPose(m_swerveDrivetrain.getPose());
     var limeLight = m_limeLight.getLatestResult();
     var fishEye = m_fishEye.getLatestResult();
 
-    SmartDashboard.putNumber("Rotation", m_swerveDrivetrain.getPose().getRotation().getDegrees());
+    SmartDashboard.putBoolean("hasTargets",limeLight.hasTargets());
 
-    if (limeLight.hasTargets() || fishEye.hasTargets()) {
+    // SmartDashboard.putNumber("Rotation", m_swerveDrivetrain.getPose().getRotation().getDegrees());
+    // Double x = getXoffset();
+    // double y = getYoffset();
+    // double r = getRoffset();
+
+    if (limeLight.hasTargets()) {
+      
+    SmartDashboard.putNumber("Xoff", limeLight.getBestTarget().getBestCameraToTarget().getX());
+    SmartDashboard.putNumber("Yoff", limeLight.getBestTarget().getBestCameraToTarget().getY());
+  
+      SmartDashboard.putNumber("RoFF", limeLight.getBestTarget().getBestCameraToTarget().getRotation().getZ());
       // SmartDashboard.putBoolean("EstimateReady", UpdateVisionPose());
-      SmartDashboard.putNumber("apriltagcheck", m_aprilTagFieldLayout.getTagPose(19).get().getX());
-      updateCTREpose();
-      // SmartDashboard.putNumber("GetTagID", limeLight.getBestTarget().fiducialId);
+      // SmartDashboard.putNumber("apriltagcheck", m_aprilTagFieldLayout.getTagPose(19).get().getX());
+      // updateCTREpose();
+      SmartDashboard.putNumber("GetTagID", limeLight.getBestTarget().fiducialId);
       // m_field2d.setRobotPose(UpdateVisionPose().get().estimatedPose.toPose2d());
       // UpdateVisionPose(); // remove when using global
       // m_field2d.setRobotPose(UpdateGlobalPose());
